@@ -1,33 +1,22 @@
 <?php
 include "db.php"; 
-session_start();
-$_POST = json_decode(file_get_contents('php://input'), true);
-if(isset($_POST) && !empty($_POST)) {
-  $username = $_POST['username'];
-  $password = $_POST['password'];
-  if($username == 'admin' && $password == 'admin') {
-    $_SESSION['user'] = 'admin';
-    ?>
-{
-  "success": true,
-  "secret": "This is the secret no one knows but the admin"
+if($_GET['action'] == "login"){
+
+    $email = $_GET['email'];
+    $password = $_GET['password'];
+
+$q = mysqli_query($con, "SELECT `type` from `login`  where `email`='$email' AND `password`='$password'");
+
+
+$type=array();
+while ($row=mysqli_fetch_object($q)){
+  $type[]=$row;
+  break; 
 }
-    <?php
-  } else {
-    ?>
-{
-  "success": false,
-  "message": "Invalid credentials"
+
+echo json_encode($type); 
+
 }
-    <?php
-  }
-} else {
-  //var_dump($_POST)
-  ?>
-{
-  "success": false,
-  "message": "Only POST access accepted"
-}
-  <?php
-}
+
+echo mysqli_error($con);
 ?>
